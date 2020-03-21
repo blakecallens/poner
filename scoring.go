@@ -45,7 +45,7 @@ func (hand Hand) Score(starter Card, isCrib bool) (scores []Score, total int) {
 	sizedHand := append(hand[:4], starter)
 	pairings := sizedHand.BuildPairings()
 
-	grossScores = append(grossScores, nobsScore(hand[:4], starter))
+	grossScores = append(grossScores, hand[:4].NobsScore(starter))
 	grossScores = append(grossScores, pairings.OfAKindScores()...)
 	grossScores = append(grossScores, pairings.FifteenScores()...)
 	grossScores = append(grossScores, pairings.RunScores()...)
@@ -95,8 +95,9 @@ func (hand Hand) BuildPairings() (pairings Pairings) {
 	return
 }
 
-func nobsScore(base Hand, starter Card) (score Score) {
-	for _, card := range base {
+// NobsScore finds the nob in a hand
+func (hand Hand) NobsScore(starter Card) (score Score) {
+	for _, card := range hand {
 		if card.Name == "J" && card.Suit == starter.Suit {
 			return nobs.AddPairing(Hand{card})
 		}

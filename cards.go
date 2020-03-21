@@ -97,6 +97,18 @@ func (deck *Deck) Deal(cards int, players int) (hands []Hand, err error) {
 	return
 }
 
+// PullFromTop deals one card from the deck
+func (deck *Deck) PullFromTop() (card Card, err error) {
+	if len(deck.Cards) == 0 {
+		err = errors.New("PullFromTop:: no cards left in the deck")
+		return
+	}
+	card = deck.Cards[0]
+	deck.Cards = deck.Cards[1:]
+	deck.GetFrequencies()
+	return
+}
+
 // PullCard finds a card in the deck and pulls it
 func (deck *Deck) PullCard(name string, suit string) (pulledCard Card, err error) {
 	for index, alt := range suitAlts {

@@ -1,6 +1,8 @@
 package poner
 
 import (
+	"errors"
+	"fmt"
 	"sort"
 )
 
@@ -38,14 +40,19 @@ var opponentCribDiscards = [][]float32{
 
 // Discard holds a player's held and discarded cards
 type Discard struct {
-	Held           Hand
-	Discarded      Hand
-	HeldScore      float32
-	DiscardedScore float32
+	Held             Hand
+	Discarded        Hand
+	HeldAverage      float32
+	DiscardedAverage float32
+}
+
+func (discard Discard) String() string {
+	return fmt.Sprintf("Held: %v, Discarded: %v, HeldAvg: %v, DiscardedAvg: %v",
+		discard.Held, discard.Discarded, discard.HeldAverage, discard.DiscardedAverage)
 }
 
 // GetAverageScore returns the average score of a hand
-func (hand Hand) GetAverageScore(deck Deck) float32 {
+func (hand Hand) GetAverageScore(deck *Deck) float32 {
 	frequencyTotal := 0
 	for _, frequency := range deck.Frequencies {
 		_, total := hand.Score(Card{Name: frequency.Name, Value: frequency.Value, Order: frequency.Order}, false)
@@ -55,7 +62,7 @@ func (hand Hand) GetAverageScore(deck Deck) float32 {
 }
 
 // BuildPossibleDiscards returns all the different discard options for a hand
-func (hand Hand) BuildPossibleDiscards(deck Deck, playersCrib bool) (discards []Discard) {
+func (hand Hand) BuildPossibleDiscards(deck *Deck, playersCrib bool) (discards []Discard) {
 	discards = []Discard{}
 	pairings := Pairings{}
 	// Quadruples
@@ -85,15 +92,15 @@ func (hand Hand) BuildPossibleDiscards(deck Deck, playersCrib bool) (discards []
 			}
 		}
 		discard := Discard{
-			Held:      held,
-			Discarded: discarded,
-			HeldScore: held.GetAverageScore(deck),
+			Held:        held,
+			Discarded:   discarded,
+			HeldAverage: held.GetAverageScore(deck),
 		}
 		if len(discarded) == 2 {
 			if playersCrib {
-				discard.DiscardedScore = playerCribDiscards[discarded[0].Order][discarded[1].Order]
+				discard.DiscardedAverage = playerCribDiscards[discarded[0].Order][discarded[1].Order]
 			} else {
-				discard.DiscardedScore = opponentCribDiscards[discarded[0].Order][discarded[1].Order]
+				discard.DiscardedAverage = opponentCribDiscards[discarded[0].Order][discarded[1].Order]
 			}
 		}
 
@@ -103,15 +110,36 @@ func (hand Hand) BuildPossibleDiscards(deck Deck, playersCrib bool) (discards []
 }
 
 // GetBestDiscard returns the best possible discard for a hand
-func (hand Hand) GetBestDiscard(deck Deck, playersCrib bool) (discard Discard) {
+func (hand Hand) GetBestDiscard(deck *Deck, playersCrib bool) (discard Discard) {
 	discards := hand.BuildPossibleDiscards(deck, playersCrib)
 	sort.Slice(discards, func(ii, jj int) bool {
 		if playersCrib {
-			return discards[ii].HeldScore+discards[ii].DiscardedScore >
-				discards[jj].HeldScore+discards[jj].DiscardedScore
+			return discards[ii].HeldAverage+discards[ii].DiscardedAverage >
+				discards[jj].HeldAverage+discards[jj].DiscardedAverage
 		}
-		return discards[ii].HeldScore-discards[ii].DiscardedScore >
-			discards[jj].HeldScore-discards[jj].DiscardedScore
+		return discards[ii].HeldAverage-discards[ii].DiscardedAverage >
+			discards[jj].HeldAverage-discards[jj].DiscardedAverage
 	})
 	return discards[0]
+}
+
+// BuildCrib creates the crib from the discards
+func BuildCrib(discards []Discard, deck *Deck) (crib Hand, err error) {
+	crib = Hand{}
+	if len(discards) > 4 {
+		err = errors.New("BuildCrib:: no more than 4 player discards allowed")
+		return
+	}
+	for _, discard := range discards {
+		crib = append(crib, discard.Discarded...)
+	}
+	for len(crib) < 4 {
+		var card Card
+		card, err = deck.PullFromTop()
+		if err != nil {
+			return
+		}
+		crib = append(crib, card)
+	}
+	return
 }
