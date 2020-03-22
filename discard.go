@@ -42,6 +42,7 @@ var opponentCribDiscards = [][]float32{
 type Discard struct {
 	Held             Hand
 	Discarded        Hand
+	Played           Hand
 	HeldAverage      float32
 	DiscardedAverage float32
 }
@@ -94,6 +95,7 @@ func (hand Hand) BuildPossibleDiscards(deck *Deck, playersCrib bool) (discards [
 		discard := Discard{
 			Held:        held,
 			Discarded:   discarded,
+			Played:      Hand{},
 			HeldAverage: held.GetAverageScore(deck),
 		}
 		if len(discarded) == 2 {
