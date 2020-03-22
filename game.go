@@ -121,13 +121,18 @@ func (game *Game) NextPlayer() (isHuman bool, card Card, scores []Score, err err
 		return
 	}
 
-	card, cantPlay := player.PlayingHand.GetBestPlay(game.Field)
+	nextPlayer := game.ActivePlayer + 1
+	if nextPlayer >= len(game.Players) {
+		nextPlayer = 0
+	}
+
+	plays, cantPlay := player.PlayingHand.GetPlays(game.Field, game.Players[nextPlayer])
 	if cantPlay {
 		player.Gone = true
 		return
 	}
-
-	scores, err = game.PutCardIntoField(card, player)
+	skillAdjust := player.GetSkillAdjust(len(plays))
+	scores, err = game.PutCardIntoField(plays[skillAdjust].Card, player)
 	return
 }
 
@@ -154,8 +159,7 @@ func (game *Game) HumanPlayGone(card Card) (scores []Score, err error) {
 		err = errors.New("HumanPlayGone:: the active player is not human")
 		return
 	}
-	_, cantPlay := player.PlayingHand.GetBestPlay(game.Field)
-	if cantPlay {
+	if !player.PlayingHand.CanPlay(game.Field) {
 		player.Gone = true
 		return
 	}

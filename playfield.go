@@ -2,7 +2,29 @@ package poner
 
 import (
 	"fmt"
+	"sort"
 )
+
+// CardPlay holds the ranking of a card play
+type CardPlay struct {
+	Card  Card
+	Value int
+}
+
+// CardPlays is a group of CardPlays for sorting
+type CardPlays []CardPlay
+
+func (plays CardPlays) Len() int        { return len(plays) }
+func (plays CardPlays) Swap(ii, jj int) { plays[ii], plays[jj] = plays[jj], plays[ii] }
+func (plays CardPlays) Less(ii, jj int) bool {
+	if plays[ii].Value > plays[jj].Value {
+		return true
+	}
+	if plays[ii].Value == plays[jj].Value {
+		return plays[ii].Card.Value > plays[jj].Card.Value
+	}
+	return false
+}
 
 // CanBePlayed returns whether a card can be played
 func (card Card) CanBePlayed(field Hand) bool {
@@ -74,44 +96,69 @@ func (hand Hand) FieldScore() (scores []Score) {
 	return
 }
 
-// GetBestPlay gets the best card to play
-func (hand Hand) GetBestPlay(field Hand) (bestCard Card, cantPlay bool) {
-	canPlay := Hand{}
+// GetPlays gets all available plays
+func (hand Hand) GetPlays(field Hand, nextPlayer Player) (plays CardPlays, cantPlay bool) {
+	plays = CardPlays{}
 	for _, card := range hand {
 		if card.CanBePlayed(field) {
-			canPlay = append(canPlay, card)
+			plays = append(plays, CardPlay{Card: card})
 		}
 	}
-	if len(canPlay) == 0 {
+	if len(plays) == 0 {
 		cantPlay = true
+	}
+
+	for ii := range plays {
+		play := &plays[ii]
+		play.CalculateValue(field, nextPlayer)
+	}
+	sort.Sort(CardPlays(plays))
+
+	return
+}
+
+// CalculateValue computes the value of a potential card play
+func (play *CardPlay) CalculateValue(field Hand, nextPlayer Player) {
+	playValue := 0
+
+	// Bad moves
+	newField := append(field, play.Card)
+	for _, card := range nextPlayer.Discard.Played {
+		scores := card.WouldScore(newField)
+		if len(scores) > 0 {
+			playValue--
+		}
+		if card.Value < 5 {
+			card = Card{Name: names[4-card.Order], Value: 5 - card.Value, Order: 4 - card.Order}
+		} else if card.Value > 5 {
+			card = Card{Name: names[14-card.Order], Value: 15 - card.Value, Order: 14 - card.Order}
+		}
+		scores = card.WouldScore(newField)
+		if len(scores) > 0 {
+			playValue--
+		}
+	}
+	total := play.Card.TotalWouldBe(field)
+	if total == 5 || total == 10 || total == 21 {
+		playValue--
+	}
+
+	// Good moves
+	scores := play.Card.WouldScore(field)
+	for _, score := range scores {
+		playValue += score.Value
+	}
+
+	play.Value = playValue
+}
+
+// GetBestPlay gets the best card to play
+func (hand Hand) GetBestPlay(field Hand, nextPlayer Player) (bestCard Card, cantPlay bool) {
+	plays, cantPlay := hand.GetPlays(field, nextPlayer)
+	if cantPlay {
 		return
 	}
 
-	nonOptimal := Hand{}
-	optimal := Hand{}
-	for _, card := range canPlay {
-		total := card.TotalWouldBe(field)
-		if total == 10 || total == 21 {
-			nonOptimal = append(nonOptimal, card)
-			continue
-		}
-		optimal = append(optimal, card)
-	}
-	if len(optimal) == 0 {
-		optimal = nonOptimal
-	}
-
-	highestTotal := 0
-	for _, card := range optimal {
-		scores := card.WouldScore(field)
-		total := 0
-		for _, score := range scores {
-			total += score.Value
-		}
-		if total >= highestTotal {
-			bestCard = card
-		}
-	}
-
+	bestCard = plays[0].Card
 	return
 }

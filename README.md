@@ -7,7 +7,7 @@
 How about a nice game of cribbage?
 
 ```golang
-package main
+package poner
 
 import (
 	"github.com/blakecallens/poner"
@@ -22,11 +22,11 @@ func main() {
 	log.SetFormatter(&formatter)
 
 	// poner can handle up to four players
-	players := []poner.Player{
-		Player{Name: "Bob", IsComputer: true},
-		Player{Name: "Sue", IsComputer: true},
-		// Player{Name: "Dan", IsComputer: true},
-		// Player{Name: "Joe", IsComputer: true},
+	players := poner.[]Player{
+		Player{Name: "Bob", IsComputer: true, SkillLevel: 4},
+		Player{Name: "Sue", IsComputer: true, SkillLevel: 4},
+		// Player{Name: "Dan", IsComputer: true, SkillLevel: 3},
+		// Player{Name: "Joe", IsComputer: true, SkillLevel: 2},
 	}
 	game := poner.Game{}
 	game.New(players)
@@ -172,7 +172,7 @@ INFO[.5765] Sue: 103
 Get the best discards for the hand 2♣ 3♣ 4<span style="color: darkred">♦</span> 5<span style="color: darkred">♥</span> 5♣ J♣:
 
 ```golang
-package main
+package poner
 
 import (
 	"github.com/blakecallens/poner"
@@ -182,10 +182,10 @@ import (
 func main() {
 	deck := poner.Deck{}.New()
 	hand, _ := deck.PullCards("2c 3c 4d 5h 5c Jc")
-	logrus.Info("Best discard for your crib")
-	logrus.Info(hand.GetBestDiscard(&deck, true))
-	logrus.Info("Best discard for opponent's crib")
-	logrus.Info(hand.GetBestDiscard(&deck, false))
+	log.Info("Best discard for your crib")
+	log.Info(hand.GetBestDiscard(&deck, true))
+	log.Info("Best discard for opponent's crib")
+	log.Info(hand.GetBestDiscard(&deck, false))
 }
 ```
 

@@ -111,9 +111,9 @@ func (hand Hand) BuildPossibleDiscards(deck *Deck, playersCrib bool) (discards [
 	return
 }
 
-// GetBestDiscard returns the best possible discard for a hand
-func (hand Hand) GetBestDiscard(deck *Deck, playersCrib bool) (discard Discard) {
-	discards := hand.BuildPossibleDiscards(deck, playersCrib)
+// GetDiscards returns the possible discards for a hand sorted by best first
+func (hand Hand) GetDiscards(deck *Deck, playersCrib bool) (discards []Discard) {
+	discards = hand.BuildPossibleDiscards(deck, playersCrib)
 	sort.Slice(discards, func(ii, jj int) bool {
 		if playersCrib {
 			return discards[ii].HeldAverage+discards[ii].DiscardedAverage >
@@ -122,7 +122,12 @@ func (hand Hand) GetBestDiscard(deck *Deck, playersCrib bool) (discard Discard) 
 		return discards[ii].HeldAverage-discards[ii].DiscardedAverage >
 			discards[jj].HeldAverage-discards[jj].DiscardedAverage
 	})
-	return discards[0]
+	return
+}
+
+// GetBestDiscard returns the best possible discard for a hand
+func (hand Hand) GetBestDiscard(deck *Deck, playersCrib bool) (discard Discard) {
+	return hand.GetDiscards(deck, playersCrib)[0]
 }
 
 // BuildCrib creates the crib from the discards
