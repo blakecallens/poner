@@ -1,7 +1,6 @@
 package poner
 
 import (
-	"errors"
 	"fmt"
 	"sort"
 )
@@ -128,25 +127,4 @@ func (hand Hand) GetDiscards(deck *Deck, playersCrib bool) (discards []Discard) 
 // GetBestDiscard returns the best possible discard for a hand
 func (hand Hand) GetBestDiscard(deck *Deck, playersCrib bool) (discard Discard) {
 	return hand.GetDiscards(deck, playersCrib)[0]
-}
-
-// BuildCrib creates the crib from the discards
-func BuildCrib(discards []Discard, deck *Deck) (crib Hand, err error) {
-	crib = Hand{}
-	if len(discards) > 4 {
-		err = errors.New("BuildCrib:: no more than 4 player discards allowed")
-		return
-	}
-	for _, discard := range discards {
-		crib = append(crib, discard.Discarded...)
-	}
-	for len(crib) < 4 {
-		var card Card
-		card, err = deck.PullFromTop()
-		if err != nil {
-			return
-		}
-		crib = append(crib, card)
-	}
-	return
 }

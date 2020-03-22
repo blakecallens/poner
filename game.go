@@ -52,12 +52,14 @@ func (game *Game) NextRound() (score Score, err error) {
 		game.Players[index].TakeDeal(hand, &game.Deck, index == game.Dealer)
 	}
 
-	discards := []Discard{}
-	for _, player := range game.Players {
-		discards = append(discards, player.Discard)
+	err = game.BuildCrib()
+	if err != nil {
+		return
 	}
-	game.Crib, err = BuildCrib(discards, &game.Deck)
-	game.Starter, _ = game.Deck.PullFromTop()
+	game.Starter, err = game.Deck.PullFromTop()
+	if err != nil {
+		return
+	}
 
 	score = game.Starter.HisHeelsScore()
 	if score.Value > 0 {
@@ -65,6 +67,32 @@ func (game *Game) NextRound() (score Score, err error) {
 		player.AddScore([]Score{score})
 		game.CheckForWinner(player)
 	}
+	return
+}
+
+// BuildCrib creates the crib from the discards
+func (game *Game) BuildCrib() (err error) {
+	crib := Hand{}
+	discards := []Discard{}
+	for _, player := range game.Players {
+		discards = append(discards, player.Discard)
+	}
+	if len(discards) > 4 {
+		err = errors.New("BuildCrib:: no more than 4 player discards allowed")
+		return
+	}
+	for _, discard := range discards {
+		crib = append(crib, discard.Discarded...)
+	}
+	for len(crib) < 4 {
+		var card Card
+		card, err = game.Deck.PullFromTop()
+		if err != nil {
+			return
+		}
+		crib = append(crib, card)
+	}
+	game.Crib = crib
 	return
 }
 
