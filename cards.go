@@ -28,9 +28,21 @@ func (card Card) String() string {
 // Hand represents a collection of cards held by a player
 type Hand []Card
 
-func (a Hand) Len() int             { return len(a) }
-func (a Hand) Swap(ii, jj int)      { a[ii], a[jj] = a[jj], a[ii] }
-func (a Hand) Less(ii, jj int) bool { return a[ii].Order < a[jj].Order }
+func (hand Hand) Len() int             { return len(hand) }
+func (hand Hand) Swap(ii, jj int)      { hand[ii], hand[jj] = hand[jj], hand[ii] }
+func (hand Hand) Less(ii, jj int) bool { return hand[ii].Order < hand[jj].Order }
+
+// RemoveCard removes a card from a hand
+func (hand Hand) RemoveCard(card Card) (newHand Hand) {
+	for index, handCard := range hand {
+		if card == handCard {
+			hand = append(hand[:index], hand[index+1:]...)
+			break
+		}
+	}
+
+	return hand
+}
 
 // Frequency represents the number of cards of a type left in the deck
 type Frequency struct {
@@ -77,6 +89,13 @@ func (deck *Deck) Shuffle() {
 	deck.Cards = shuffledCards
 }
 
+// Cut cuts the cards in a deck
+func (deck *Deck) Cut() {
+	rand.Seed(time.Now().UnixNano())
+	index := rand.Intn(len(deck.Cards))
+	deck.Cards = append(deck.Cards[index:], deck.Cards[:index]...)
+}
+
 // Deal deals x number of cards to y players
 func (deck *Deck) Deal(cards int, players int) (hands []Hand, err error) {
 	if len(deck.Cards) < cards*players {
@@ -95,6 +114,15 @@ func (deck *Deck) Deal(cards int, players int) (hands []Hand, err error) {
 	}
 	deck.GetFrequencies()
 	return
+}
+
+// DealCribbage auto deals the correct amount of cribbage cards for players
+func (deck *Deck) DealCribbage(players int) (hands []Hand, err error) {
+	cards := 6
+	if players > 2 {
+		cards = 5
+	}
+	return deck.Deal(cards, players)
 }
 
 // PullFromTop deals one card from the deck
