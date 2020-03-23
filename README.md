@@ -1,4 +1,4 @@
-# poner
+# poner [![Build Status](https://travis-ci.com/blakecallens/poner.svg?branch=master)](https://travis-ci.com/blakecallens/poner) [![GoDoc](https://godoc.org/github.com/blakecallens/poner?status.svg)](https://godoc.org/github.com/blakecallens/poner)
 
 ### A Golang cribbage engine with computer play of varying skill level
 
