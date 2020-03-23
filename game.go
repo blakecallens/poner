@@ -181,7 +181,7 @@ func (game *Game) HumanPlayCard(card Card) (scores []Score, err error) {
 }
 
 // HumanPlayGone acts upon a human saying go
-func (game *Game) HumanPlayGone(card Card) (scores []Score, err error) {
+func (game *Game) HumanPlayGone() (scores []Score, err error) {
 	player := &game.Players[game.ActivePlayer]
 	if player.IsComputer {
 		err = errors.New("HumanPlayGone:: the active player is not human")

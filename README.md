@@ -1,6 +1,6 @@
 # poner
 
-### A Golang cribbage engine with computer play
+### A Golang cribbage engine with computer play of varying skill level
 
 #### Examples
 
