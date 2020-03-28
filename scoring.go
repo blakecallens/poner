@@ -35,6 +35,9 @@ var (
 	runOfThree      = Score{Name: "Run of Three", Value: 3}
 	runOfFour       = Score{Name: "Run of Four", Value: 4}
 	runOfFive       = Score{Name: "Run of Five", Value: 5}
+	runOfSix        = Score{Name: "Run of Six", Value: 6}
+	runOfSeven      = Score{Name: "Run of Seven", Value: 7}
+	runOfEight      = Score{Name: "Run of Eight", Value: 8}
 	flushOfFour     = Score{Name: "Flush of Four", Value: 4}
 	flushOfFive     = Score{Name: "Flush of Five", Value: 5}
 	hisHeels        = Score{Name: "His Heels", Value: 2}
@@ -200,6 +203,12 @@ func (hand Hand) RunScore() (score Score) {
 		return runOfFour.AddPairing(hand)
 	case 5:
 		return runOfFive.AddPairing(hand)
+	case 6:
+		return runOfSix.AddPairing(hand)
+	case 7:
+		return runOfSeven.AddPairing(hand)
+	case 8:
+		return runOfEight.AddPairing(hand)
 	default:
 		return
 	}
