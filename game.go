@@ -4,23 +4,21 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
-	"sync"
 	"time"
 )
 
 // Game represents
 type Game struct {
-	Players       []Player
-	Round         int
-	ToWin         int
-	Dealer        int
-	ActivePlayer  int
-	ComputerDelay time.Duration
-	Deck          Deck
-	Starter       Card
-	Field         Hand
-	Crib          Hand
-	Winner        *Player
+	Players      []Player
+	Round        int
+	ToWin        int
+	Dealer       int
+	ActivePlayer int
+	Deck         Deck
+	Starter      Card
+	Field        Hand
+	Crib         Hand
+	Winner       *Player
 }
 
 // New creates a new game
@@ -138,11 +136,6 @@ func (game *Game) GoScore() (score Score) {
 	return score
 }
 
-func (game *Game) delayComputer(wg *sync.WaitGroup) {
-	defer wg.Done()
-	time.Sleep(game.ComputerDelay)
-}
-
 // NextPlayer runs the next player turn
 func (game *Game) NextPlayer() (isHuman bool, card Card, scores []Score, err error) {
 	game.ActivePlayer++
@@ -155,11 +148,6 @@ func (game *Game) NextPlayer() (isHuman bool, card Card, scores []Score, err err
 	if isHuman {
 		return
 	}
-
-	var wg sync.WaitGroup
-	wg.Add(1)
-	go game.delayComputer(&wg)
-	wg.Wait()
 
 	nextPlayer := game.ActivePlayer + 1
 	if nextPlayer >= len(game.Players) {

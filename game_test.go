@@ -2,7 +2,6 @@ package poner_test
 
 import (
 	"testing"
-	"time"
 
 	"github.com/blakecallens/poner"
 )
@@ -12,7 +11,7 @@ func TestSim2Players(t *testing.T) {
 		poner.Player{Name: "Bob", IsComputer: true, SkillLevel: 4},
 		poner.Player{Name: "Sue", IsComputer: false, SkillLevel: 4},
 	}
-	game := poner.Game{ComputerDelay: 1 * time.Millisecond}
+	game := poner.Game{}
 	game.New(players)
 
 	// Wait for a winner
