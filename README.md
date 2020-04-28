@@ -7,7 +7,7 @@
 How about a nice game of cribbage?
 
 ```golang
-package poner
+package main
 
 import (
 	"github.com/blakecallens/poner"
@@ -22,11 +22,11 @@ func main() {
 	log.SetFormatter(&formatter)
 
 	// poner can handle up to four players
-	players := poner.[]Player{
-		Player{Name: "Bob", IsComputer: true, SkillLevel: 4},
-		Player{Name: "Sue", IsComputer: true, SkillLevel: 4},
-		// Player{Name: "Dan", IsComputer: true, SkillLevel: 3},
-		// Player{Name: "Joe", IsComputer: true, SkillLevel: 2},
+	players := []poner.Player{
+		{Name: "Bob", IsComputer: true, SkillLevel: 4},
+		{Name: "Sue", IsComputer: true, SkillLevel: 4},
+		// {Name: "Dan", IsComputer: true, SkillLevel: 3},
+		// {Name: "Joe", IsComputer: true, SkillLevel: 2},
 	}
 	game := poner.Game{}
 	game.New(players)
@@ -45,7 +45,7 @@ func main() {
 	}
 }
 
-func playRound(game *Game) {
+func playRound(game *poner.Game) {
 	log.Info("Starting a new round")
 	// Start a new round an get his heels, if drawn
 	score, _ := game.NextRound()
@@ -87,10 +87,10 @@ func playRound(game *Game) {
 	}
 }
 
-func scorePlayerHands(game *Game) {
+func scorePlayerHands(game *poner.Game) {
 	ii := game.Dealer + 1
 	scoresCounted := 0
-	var player *Player
+	var player *poner.Player
 	// Start with the player left of the dealer and make your way around
 	for scoresCounted < len(game.Players) {
 		if ii >= len(game.Players) {
