@@ -12,7 +12,7 @@ func TestAddScore(t *testing.T) {
 	if total != 0 {
 		t.Errorf("Error adding score to player, got %v, want 0", total)
 	}
-	total = player.AddScore([]poner.Score{poner.Score{Name: "Fifteen", Value: 2}})
+	total = player.AddScore([]poner.Score{{Name: "Fifteen", Value: 2}})
 	if player.Score != 2 {
 		t.Errorf("Error adding score to player, got %v, want 2", player.Score)
 	}

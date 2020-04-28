@@ -8,8 +8,8 @@ import (
 
 func TestSim2Players(t *testing.T) {
 	players := []poner.Player{
-		poner.Player{Name: "Bob", IsComputer: true, SkillLevel: 4},
-		poner.Player{Name: "Sue", IsComputer: false, SkillLevel: 4},
+		{Name: "Bob", IsComputer: true, SkillLevel: 4},
+		{Name: "Sue", IsComputer: false, SkillLevel: 4},
 	}
 	game := poner.Game{}
 	game.New(players)
@@ -30,9 +30,9 @@ func TestSim2Players(t *testing.T) {
 
 func TestSim3Players(t *testing.T) {
 	players := []poner.Player{
-		poner.Player{Name: "Bob", IsComputer: true, SkillLevel: 4},
-		poner.Player{Name: "Sue", IsComputer: true, SkillLevel: 4},
-		poner.Player{Name: "Dan", IsComputer: true, SkillLevel: 3},
+		{Name: "Bob", IsComputer: true, SkillLevel: 4},
+		{Name: "Sue", IsComputer: true, SkillLevel: 4},
+		{Name: "Dan", IsComputer: true, SkillLevel: 3},
 	}
 	game := poner.Game{}
 	game.New(players)
@@ -53,10 +53,10 @@ func TestSim3Players(t *testing.T) {
 
 func TestSim4Players(t *testing.T) {
 	players := []poner.Player{
-		poner.Player{Name: "Bob", IsComputer: true, SkillLevel: 4},
-		poner.Player{Name: "Sue", IsComputer: true, SkillLevel: 4},
-		poner.Player{Name: "Dan", IsComputer: true, SkillLevel: 3},
-		poner.Player{Name: "Joe", IsComputer: true, SkillLevel: 2},
+		{Name: "Bob", IsComputer: true, SkillLevel: 4},
+		{Name: "Sue", IsComputer: true, SkillLevel: 4},
+		{Name: "Dan", IsComputer: true, SkillLevel: 3},
+		{Name: "Joe", IsComputer: true, SkillLevel: 2},
 	}
 	game := poner.Game{}
 	game.New(players)
@@ -77,11 +77,11 @@ func TestSim4Players(t *testing.T) {
 
 func TestSim5Players(t *testing.T) {
 	players := []poner.Player{
-		poner.Player{Name: "Bob", IsComputer: true, SkillLevel: 4},
-		poner.Player{Name: "Sue", IsComputer: true, SkillLevel: 4},
-		poner.Player{Name: "Dan", IsComputer: true, SkillLevel: 3},
-		poner.Player{Name: "Joe", IsComputer: true, SkillLevel: 2},
-		poner.Player{Name: "Foo", IsComputer: true, SkillLevel: 1},
+		{Name: "Bob", IsComputer: true, SkillLevel: 4},
+		{Name: "Sue", IsComputer: true, SkillLevel: 4},
+		{Name: "Dan", IsComputer: true, SkillLevel: 3},
+		{Name: "Joe", IsComputer: true, SkillLevel: 2},
+		{Name: "Foo", IsComputer: true, SkillLevel: 1},
 	}
 	game := poner.Game{}
 	game.New(players)
